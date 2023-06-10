@@ -51,7 +51,7 @@ def bookings(request):
     if request.method == 'POST':
         data = json.load(request)
         exist = Booking.objects.filter(reservation_date=data['reservation_date']).filter(
-            reservation_slot=data['reservation_slot']).exists()
+            reservation_slot=data['reservation_slot']).exists() # this look for unique value
         if exist==False:
             booking = Booking(
                 first_name=data['first_name'],

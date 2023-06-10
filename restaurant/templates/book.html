@@ -9,18 +9,27 @@
     <div class="row">
       <!--Begin col-->
       <div class="column">
-          <form action="" method="post">
           {% csrf_token %}
-          {{form.as_p}}
-          <p>
+          <form method="POST" id="form">
+            <!-- {% csrf_token %} -->
+            <p>
+              <label for="first_name">Name:</label>
+              <input type="text" placeholder="Your Name" maxlength="200" required="" id="first_name">
+            </p>
+            <p>
+              <label for="reservation_date">Reservation Date:</label>
+              <input type="date" placeholder="" maxlength="200" required="" id="reservation_date">
+            </p>
+      
+            <p>
               <label for="reservation_slot">Reservation time:</label>
               <select id="reservation_slot">
                 <option value="0" disabled>Select time</option>
               </select>
             </p>
-          <input type="submit" id="button">
-        </form>
-          </div>
+            <button type="button" id="button">Reserve</button>
+          </form>
+      </div>
       <!--End col-->
 
       <!--Begin col-->
@@ -41,8 +50,7 @@
 <script>
   console.log('hello Script')
 // select reservation date field  
-  const date_field = document.getElementById('id_reservation_date')
-  date_field.type='date'; //-> replaced step 9
+  const date_field = document.getElementById('reservation_date')
   
   const date = new Date()
   date_field.value = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate().toString().padStart(2, "0")}`
@@ -67,8 +75,8 @@ function getBookings() {
       slot_bank=[]  
       /* Step 11: Part three */
       for(let item of data){
-        console.log('item.field',item.fields)
         reserved_slots.push(item.fields.reservation_slots)
+        console.log('item.field',item.fields)
         bookings = `<p>${item.fields.first_name} - ${formatTime(item.fields.reservation_slot)}</p>`
         slot_bank.push(bookings)
       }
@@ -79,7 +87,7 @@ function getBookings() {
       for(let i = 10; i <20; i++){
         const label = formatTime(i)
         
-        if(reserved_slots.includes(i)==true){
+        if(reserved_slots.includes(i)){
           slot_options += `<option value=${i} disabled>${label}</option>`
         }else{
           slot_options += `<option value=${i}>${label}</option>`
@@ -89,7 +97,7 @@ function getBookings() {
         document.getElementById('reservation_slot').innerHTML = slot_options
 
         if(bookings==''){
-          bookings = "No bookings"
+          document.getElementById('bookings').innerHTML = "no bookings";
         }else{
           console.log(slot_bank)
           const print_slot = slot_bank.map(item => item)
@@ -105,7 +113,6 @@ function getBookings() {
     return label
   }
 
-
   document.getElementById('button').addEventListener('click', function (e) {
     const formdata = {
       first_name: document.getElementById('first_name').value,
@@ -116,7 +123,13 @@ function getBookings() {
     fetch("{% url 'bookings' %}", { method: 'post', body: JSON.stringify(formdata) })
       .then(r => r.text())
       .then(data => {
-        getBookings()
+        console.log('data',data.includes('error'))
+        if(data.includes('error')){
+          alert('FAILED: Date and time already taken!')
+        }else{
+          getBookings()
+          alert('Reservation Success!')
+        }
       })
   })
 </script>
