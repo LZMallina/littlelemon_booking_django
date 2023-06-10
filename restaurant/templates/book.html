@@ -72,13 +72,13 @@ function getBookings() {
     .then(data => {
       reserved_slots = []
       bookings = ''
-      slot_bank=[]  
+
       /* Step 11: Part three */
       for(let item of data){
         reserved_slots.push(item.fields.reservation_slots)
         console.log('item.field',item.fields)
-        bookings = `<p>${item.fields.first_name} - ${formatTime(item.fields.reservation_slot)}</p>`
-        slot_bank.push(bookings)
+        bookings += `<p>${item.fields.first_name} - ${formatTime(item.fields.reservation_slot)}</p>`
+
       }
   
       /* Step 12: Part four  */
@@ -97,11 +97,9 @@ function getBookings() {
         document.getElementById('reservation_slot').innerHTML = slot_options
 
         if(bookings==''){
-          document.getElementById('bookings').innerHTML = "no bookings";
+          document.getElementById('bookings').innerHTML = "No Booking";
         }else{
-          console.log(slot_bank)
-          const print_slot = slot_bank.map(item => item)
-          document.getElementById('bookings').innerHTML = print_slot;
+          document.getElementById('bookings').innerHTML = bookings;
         }
       }) //<-- closing bracket for fetch
   }//<-- closing bracket for Bookings
